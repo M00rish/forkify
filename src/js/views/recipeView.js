@@ -1,10 +1,14 @@
+import icons from 'url:../../img/icons.svg';
+import { Fraction } from 'fractional';
+
 class RecipeView {
   #parentElement = document.querySelector('.recipe');
   #data;
+  #errorMsg = 'Something went wrong please try again.';
+  #SuccesMsg = 'success';
 
   #generateMarkup() {
-    const markUp = `
-   
+    return `
         <figure class="recipe__fig">
           <img src="${this.#data.image}" class="recipe__img" />
           <h1 class="recipe__title">
@@ -61,20 +65,7 @@ class RecipeView {
           <h2 class="heading--2">Recipe ingredients</h2>
           <ul class="recipe__ingredient-list">
             ${this.#data.ingredients
-              .map(ing => {
-                return `
-               <li class="recipe__ingredient">
-              <svg class="recipe__icon">
-                <use href="${icons}#icon-check"></use>
-              </svg>
-              <div class="recipe__quantity">${ing.quantity}</div>
-              <div class="recipe__description">
-                <span class="recipe__unit">${ing.unit}</span>
-                ${ing.description}
-              </div>
-            </li>
-              `;
-              })
+              .map(this.#generateMarkupIngtredient)
               .join('')}
           </ul>
         </div>
@@ -101,6 +92,30 @@ class RecipeView {
         </div>`;
   }
 
+  // Generate Ingerdients
+  #generateMarkupIngtredient(ing) {
+    return `
+            <li class="recipe__ingredient">
+              <svg class="recipe__icon">
+                <use href="${icons}#icon-check"></use>
+              </svg>
+              <div class="recipe__quantity">${
+                ing.quantity ? new Fraction(ing.quantity) : ''
+              }</div>
+              <div class="recipe__description">
+                <span class="recipe__unit">${ing.unit}</span>
+                ${ing.description}
+              </div>
+            </li>
+              `;
+  }
+
+  // Add the Markup
+  #Fill(markUp) {
+    this.#parentElement.innerHTML = '';
+    this.#parentElement.insertAdjacentHTML('afterbegin', markUp);
+  }
+
   // Spinner
   RenderSpinner = function () {
     const markUp = `
@@ -110,19 +125,48 @@ class RecipeView {
           </svg>
       </div>`;
 
-    this.#parentElement.innerHTML = '';
-    this.#parentElement.insertAdjacentHTML('afterbegin', markUp);
+    this.#Fill(markUp);
   };
 
-  #clear() {
-    this.#parentElement.innerHTML = '';
-  }
-
+  // Render Recipe
   render(data) {
     this.#data = data;
-    const markUp = this.#generateMarkup;
-    this.#clear;
-    this.#parentElement.insertAdjacentHTML('afterbegin', markUp);
+    const markUp = this.#generateMarkup();
+    this.#Fill(markUp);
+  }
+
+  RenderError(message = this.#errorMsg) {
+    const markUp = `
+        <div class="error">
+            <div>
+              <svg>
+                <use href="${icons}#icon-alert-triangle"></use>
+              </svg>
+            </div>
+            <p>${message}</p>
+        </div>
+        `;
+
+    this.#Fill(markUp);
+  }
+
+  RenderMessage(message = this.#SuccesMsg) {
+    const markUp = `
+         <div class="message">
+          <div>
+            <svg>
+              <use href="${icons}#icon-smile"></use>
+            </svg>
+          </div>
+          <p>${message}</p>
+        </div>
+        `;
+
+    this.#Fill(markUp);
+  }
+
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(ev => addEventListener(ev, handler));
   }
 }
 
