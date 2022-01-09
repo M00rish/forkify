@@ -4,8 +4,18 @@ export default class view {
   _data;
 
   // Add the Markup
-  _Fill(markUp) {
+  clear() {
     this._parentElement.innerHTML = '';
+  }
+
+  // Render Recipe
+  render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.RenderError();
+
+    this._data = data;
+    const markUp = this._generateMarkup();
+    this.clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markUp);
   }
 
@@ -18,15 +28,9 @@ export default class view {
           </svg>
       </div>`;
 
-    this._Fill(markUp);
+    this.clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markUp);
   };
-
-  // Render Recipe
-  render(data) {
-    this._data = data;
-    const markUp = this._generateMarkup();
-    this._Fill(markUp);
-  }
 
   RenderError(message = this._errorMsg) {
     const markUp = `
@@ -40,7 +44,8 @@ export default class view {
         </div>
         `;
 
-    this._Fill(markUp);
+    this.clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markUp);
   }
 
   RenderMessage(message = this._SuccesMsg) {
@@ -55,6 +60,7 @@ export default class view {
         </div>
         `;
 
-    this._Fill(markUp);
+    this.clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markUp);
   }
 }

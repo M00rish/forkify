@@ -3,6 +3,8 @@ import view from './View';
 
 class resultsView extends view {
   _parentElement = document.querySelector('.results');
+  _errorMsg = 'No recipes found.';
+  _SuccesMsg = '';
 
   _generateMarkup() {
     console.log(this._data);

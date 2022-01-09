@@ -1,13 +1,15 @@
-import * as model from './model';
-import recipeView from './views/recipeView';
-
 import 'core-js/stable'; //polyfilling js
+
+import * as model from './model';
+
+import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultsView from './views/resultsView';
+import paginationView from './views/paginationView';
 
-if (module.hot) {
-  module.hot.accept;
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 const recipeContainer = document.querySelector('.recipe');
 
@@ -35,21 +37,42 @@ const controlSerachResults = async function () {
     resultsView.RenderSpinner();
     // 1) get Query
     const query = searchView.getQuery();
-    if (!query) return;
+    if (!query) {
+      resultsView.RenderError('Please Type Something');
+      return;
+    }
 
     // 2)  Load Search Results
     await model.loadSearchResults(query);
 
     // 3) Render Results
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.loadResultsPerPage());
+
+    // 4) Render Pagination
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
+};
+
+const controlPagination = function (GotoPage) {
+  // 1) Render New Results
+  resultsView.render(model.loadResultsPerPage(GotoPage));
+
+  // 2) Render New Pagination
+  paginationView.render(model.state.search);
+};
+
+const controlServings = function () {
+  // Update recipe serving
+  model.updateServings();
+  // Update recipe view
 };
 
 //add event handlers
 const init = function () {
   recipeView.addHandlerRender(ControlRecipes);
   searchView.addHandlerSearch(controlSerachResults);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();

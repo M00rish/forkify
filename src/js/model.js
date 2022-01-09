@@ -1,15 +1,20 @@
 import 'regenerator-runtime/runtime'; // polyfilling async-await
 import { API_URL } from './Config';
+import { RESULTS_PER_PAGE } from './Config';
 import { getJson } from './helpers';
 
+// State Object
 export const state = {
   recipe: {},
   search: {
     query: '',
     results: [],
+    resultsPerPage: RESULTS_PER_PAGE,
+    page: 1,
   },
 };
 
+// Load Recipe details
 export const loadRecipe = async function (id) {
   try {
     const data = await getJson(`${API_URL}/${id}`);
@@ -31,6 +36,7 @@ export const loadRecipe = async function (id) {
   }
 };
 
+// Load Recipes based on Search
 export const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
@@ -49,3 +55,15 @@ export const loadSearchResults = async function (query) {
     throw err;
   }
 };
+
+// Pagination
+export const loadResultsPerPage = function (page = state.search.page) {
+  state.search.page = page;
+
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+
+  return state.search.results.slice(start, end);
+};
+
+export const updateServings = function (newServings) {};

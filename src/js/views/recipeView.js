@@ -4,8 +4,6 @@ import view from './View';
 
 class RecipeView extends view {
   _parentElement = document.querySelector('.recipe');
-  _errorMsg = 'Something went wrong please try again.';
-  _SuccesMsg = 'success';
 
   _generateMarkup() {
     return `
